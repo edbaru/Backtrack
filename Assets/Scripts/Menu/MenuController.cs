@@ -5,8 +5,8 @@ public class MenuController : MonoBehaviour
 {
     public void Jugar()
     {
-        SceneManager.LoadScene(1);
         Time.timeScale=1f;
+        SceneManager.LoadScene(1);
     }
 
     public void Salir()

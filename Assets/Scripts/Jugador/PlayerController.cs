@@ -4,31 +4,32 @@ using UnityEngine.SceneManagement;
 
 public class PlayerController : MonoBehaviour
 {
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    [SerializeField] float velocidadX = 0.1f;
-    [SerializeField] float velocidadY = 0.5f;
-    private bool vivo = true;
+    private int vidas = 3;
+    private int puntuacion = 0;
+    private float tiempoTotal = 0;
+    private float movimientoX;
+    private bool tocandoSuelo;
+    private Vector2 ultimoCheckpoint = new Vector2(-8, -4);
+    private Rigidbody2D rb;
+
+    [SerializeField] float velocidadX = 5f;
+    [SerializeField] float velocidadY = 5f;
     [SerializeField] TextMeshProUGUI panelPuntuacion;
     [SerializeField] ParticleSystem sistemaParticulas;
     [SerializeField] TextMeshProUGUI tiempotranscurrido;
     [SerializeField] GameObject pantallaMuerte;
-    public float movimientoX = 0f;
-    public float movimientoY = 0f;
-    private Rigidbody2D rb;
-
-    private int vidas = 3;
-    private bool tocandoSuelo;
-
-    private int puntuacion = 0;
-
-    private float tiempoTotal = 0;
+    [SerializeField] TextMeshProUGUI vidasTxt;
+    [SerializeField] GameObject gameOver;
+    [SerializeField] GameObject gameUI;
+    [SerializeField] AudioSource efectoSonidoGameOver;
+    
 
     void Start()
     {
+        Time.timeScale=1f;
         rb = GetComponent<Rigidbody2D>();
     }
 
-    // Update is called once per frame
     void Update()
     {
         //En cada frame mira si hay que mover al jugador
@@ -45,7 +46,15 @@ public class PlayerController : MonoBehaviour
 
         //controlar el tiempo pasado
         tiempoTotal = tiempoTotal + Time.deltaTime;
-        tiempotranscurrido.text = "Tiempo: " + tiempoTotal.ToString("F2"); 
+        tiempotranscurrido.text = "Tiempo: " + tiempoTotal.ToString("F2");
+
+        if (vidas == 0)
+        {
+            gameOver.SetActive(true);
+            gameUI.SetActive(false);
+            efectoSonidoGameOver.Play();
+            Time.timeScale=0f;
+        }
 
     }
 
@@ -62,6 +71,13 @@ public class PlayerController : MonoBehaviour
         {
             tocandoSuelo = true;
         }
+        
+        if (collision.gameObject.CompareTag("Pincho") || collision.gameObject.CompareTag("ZonaMuerte"))
+        {
+            vidas--;
+            vidasTxt.text = "Vidas: " + vidas.ToString();
+            MoverUltimoCheckpoint(ultimoCheckpoint);
+        }
     }
 
     private void OnCollisionExit2D(Collision2D collision)
@@ -77,9 +93,16 @@ public class PlayerController : MonoBehaviour
         if (collision.gameObject.CompareTag("Moneda"))
         {
             Debug.Log("Detecto que toca el trigger");
-        } else if (collision.gameObject.CompareTag("ParedInvisible"))
+        }
+        
+        if (collision.gameObject.CompareTag("ParedInvisible"))
         {
             Debug.Log("Detecto que toca la pared invisible");
+        }
+
+        if (collision.gameObject.CompareTag("Checkpoint"))
+        {
+            ultimoCheckpoint = new Vector2(collision.transform.position.x, collision.transform.position.y);
         }
     }
 
@@ -94,9 +117,16 @@ public class PlayerController : MonoBehaviour
         Time.timeScale=1f;
     }
 
+    public void MoverUltimoCheckpoint(Vector2 vector2)
+    {
+        transform.position = vector2;
+        rb.linearVelocity = Vector2.zero;
+        rb.angularVelocity = 0f;
+    }
+
     public void Salir()
     {
-        SceneManager.LoadScene(0);
+        SceneManager.LoadScene("PantallaInicio");
     }
 
     public void MatarPJ()
