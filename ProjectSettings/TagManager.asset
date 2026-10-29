@@ -12,6 +12,11 @@ TagManager:
   - Pincho
   - Checkpoint
   - ZonaMuerte
+  - Advertencia
+  - Meta
+  - Llave
+  - Puerta
+  - NoSaltar
   layers:
   - Default
   - TransparentFX
