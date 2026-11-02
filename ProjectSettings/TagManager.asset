@@ -17,6 +17,7 @@ TagManager:
   - Llave
   - Puerta
   - NoSaltar
+  - Salto
   layers:
   - Default
   - TransparentFX

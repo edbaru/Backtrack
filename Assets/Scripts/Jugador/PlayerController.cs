@@ -8,7 +8,10 @@ public class PlayerController : MonoBehaviour
     private int puntuacion = 0;
     private float tiempoTotal = 0;
     private float movimientoX;
+    private float movimientoY;
     private bool tocandoSuelo;
+    private bool treparDesbloqueado;
+    private bool dobleSaltoDesbloqueado;
     private Vector2 ultimoCheckpoint = new Vector2(-8, -4);
     private Rigidbody2D rb;
 
@@ -22,6 +25,7 @@ public class PlayerController : MonoBehaviour
     [SerializeField] GameObject gameOver;
     [SerializeField] GameObject gameUI;
     [SerializeField] AudioSource efectoSonidoGameOver;
+    [SerializeField] GameObject mensajeSalto;
     
 
     void Start()
@@ -37,7 +41,7 @@ public class PlayerController : MonoBehaviour
         
         if(Input.GetKeyDown(KeyCode.Space) && tocandoSuelo)
         {
-            rb.AddForce(new Vector2(0, velocidadY), ForceMode2D.Impulse);           
+            rb.AddForce(new Vector2(0, movimientoY), ForceMode2D.Impulse);           
         }
         else
         {
@@ -78,6 +82,11 @@ public class PlayerController : MonoBehaviour
             vidasTxt.text = "Vidas: " + vidas.ToString();
             MoverUltimoCheckpoint(ultimoCheckpoint);
         }
+
+        if (collision.gameObject.CompareTag("Meta"))
+        {
+            
+        }
     }
 
     private void OnCollisionExit2D(Collision2D collision)
@@ -103,6 +112,13 @@ public class PlayerController : MonoBehaviour
         if (collision.gameObject.CompareTag("Checkpoint"))
         {
             ultimoCheckpoint = new Vector2(collision.transform.position.x, collision.transform.position.y);
+        }
+
+        if (collision.gameObject.CompareTag("Salto"))
+        {
+            movimientoY = velocidadY;
+            mensajeSalto.SetActive(true);
+            collision.GetComponent<Collider2D>().enabled = false;
         }
     }
 
