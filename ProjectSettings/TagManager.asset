@@ -18,6 +18,9 @@ TagManager:
   - Puerta
   - NoSaltar
   - Salto
+  - Trepar
+  - ParedTrepar
+  - SaltoDoble
   layers:
   - Default
   - TransparentFX

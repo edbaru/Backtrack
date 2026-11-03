@@ -9,10 +9,11 @@ public class PlayerController : MonoBehaviour
     private float tiempoTotal = 0;
     private float movimientoX;
     private float movimientoY;
+    private float fuerzaEscalar = 0f;
     private bool tocandoSuelo;
-    private bool treparDesbloqueado;
-    private bool dobleSaltoDesbloqueado;
-    private Vector2 ultimoCheckpoint = new Vector2(-8, -4);
+    private bool saltoDobleDesbloqueado;
+    private bool saltoDobleActivo;
+    private Vector2 ultimoCheckpoint = new Vector2(0, 0);
     private Rigidbody2D rb;
 
     [SerializeField] float velocidadX = 5f;
@@ -24,8 +25,12 @@ public class PlayerController : MonoBehaviour
     [SerializeField] TextMeshProUGUI vidasTxt;
     [SerializeField] GameObject gameOver;
     [SerializeField] GameObject gameUI;
+    [SerializeField] GameObject gameWin;
     [SerializeField] AudioSource efectoSonidoGameOver;
+    [SerializeField] AudioSource efectoSonidoGameWin;
     [SerializeField] GameObject mensajeSalto;
+    [SerializeField] GameObject mensajeTrepar;
+    [SerializeField] GameObject mensajeSaltoDoble;
     
 
     void Start()
@@ -42,6 +47,11 @@ public class PlayerController : MonoBehaviour
         if(Input.GetKeyDown(KeyCode.Space) && tocandoSuelo)
         {
             rb.AddForce(new Vector2(0, movimientoY), ForceMode2D.Impulse);           
+        }
+        else if (Input.GetKeyDown(KeyCode.Space) && !tocandoSuelo && saltoDobleDesbloqueado && saltoDobleActivo)
+        {
+            rb.AddForce(new Vector2(0, movimientoY), ForceMode2D.Impulse);
+            saltoDobleActivo = false;
         }
         else
         {
@@ -74,6 +84,7 @@ public class PlayerController : MonoBehaviour
         if (collision.gameObject.CompareTag("Suelo"))
         {
             tocandoSuelo = true;
+            saltoDobleActivo = false;
         }
         
         if (collision.gameObject.CompareTag("Pincho") || collision.gameObject.CompareTag("ZonaMuerte"))
@@ -85,7 +96,14 @@ public class PlayerController : MonoBehaviour
 
         if (collision.gameObject.CompareTag("Meta"))
         {
-            
+            gameWin.SetActive(true);
+            gameUI.SetActive(false);
+            efectoSonidoGameWin.Play();
+        }
+
+        if (collision.gameObject.CompareTag("ParedTrepar") && tocandoSuelo == true)
+        {
+            rb.AddForce(new Vector2(0, collision.transform.localScale.x*2*fuerzaEscalar), ForceMode2D.Impulse);
         }
     }
 
@@ -94,6 +112,7 @@ public class PlayerController : MonoBehaviour
         if (collision.gameObject.CompareTag("Suelo"))
         {
             tocandoSuelo = false;
+            saltoDobleActivo = true;
         }
     }
 
@@ -111,14 +130,26 @@ public class PlayerController : MonoBehaviour
 
         if (collision.gameObject.CompareTag("Checkpoint"))
         {
-            ultimoCheckpoint = new Vector2(collision.transform.position.x, collision.transform.position.y);
+            ultimoCheckpoint = new Vector2(collision.gameObject.GetComponentInChildren<Transform>().position.x, collision.gameObject.GetComponentInChildren<Transform>().position.y);
         }
 
         if (collision.gameObject.CompareTag("Salto"))
         {
             movimientoY = velocidadY;
             mensajeSalto.SetActive(true);
-            collision.GetComponent<Collider2D>().enabled = false;
+            collision.GetComponent<SpriteRenderer>().enabled = false;
+        }
+        if (collision.gameObject.CompareTag("Trepar"))
+        {
+            fuerzaEscalar = 1f;
+            mensajeTrepar.SetActive(true);
+            collision.GetComponent<SpriteRenderer>().enabled = false;
+        }
+        if (collision.gameObject.CompareTag("SaltoDoble"))
+        {
+            saltoDobleDesbloqueado = true;
+            mensajeSaltoDoble.SetActive(true);
+            collision.GetComponent<SpriteRenderer>().enabled = false;
         }
     }
 
