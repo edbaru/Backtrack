@@ -1,11 +1,13 @@
 using TMPro;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
 public class PlayerController : MonoBehaviour
 {
     private int vidas = 3;
-    private int puntuacion = 0;
+    private int monedas;
+    private readonly List<string> habilidadesRecogidas = new List<string>();
     private float tiempoTotal = 0;
     private float movimientoX;
     private float movimientoY;
@@ -18,16 +20,19 @@ public class PlayerController : MonoBehaviour
 
     [SerializeField] float velocidadX = 5f;
     [SerializeField] float velocidadY = 5f;
-    [SerializeField] TextMeshProUGUI panelPuntuacion;
-    [SerializeField] ParticleSystem sistemaParticulas;
+    [SerializeField] ParticleSystem efectoRecogerHabilidad;
+    [SerializeField] TextMeshProUGUI panelHabilidades;
     [SerializeField] TextMeshProUGUI tiempotranscurrido;
-    [SerializeField] GameObject pantallaMuerte;
+    [SerializeField] TextMeshProUGUI monedasTxt;
     [SerializeField] TextMeshProUGUI vidasTxt;
+    [SerializeField] GameObject pantallaMuerte;
     [SerializeField] GameObject gameOver;
     [SerializeField] GameObject gameUI;
     [SerializeField] GameObject gameWin;
+    [SerializeField] AudioSource efectoSonidoSalto;
     [SerializeField] AudioSource efectoSonidoGameOver;
     [SerializeField] AudioSource efectoSonidoGameWin;
+    [SerializeField] AudioSource efectoSonidoPowerUp;
     [SerializeField] GameObject mensajeSalto;
     [SerializeField] GameObject mensajeTrepar;
     [SerializeField] GameObject mensajeSaltoDoble;
@@ -37,6 +42,7 @@ public class PlayerController : MonoBehaviour
     {
         Time.timeScale=1f;
         rb = GetComponent<Rigidbody2D>();
+        ActualizarPanelHabilidades();
     }
 
     void Update()
@@ -44,14 +50,16 @@ public class PlayerController : MonoBehaviour
         //En cada frame mira si hay que mover al jugador
         movimientoX = Input.GetAxis("Horizontal");
         
-        if(Input.GetKeyDown(KeyCode.Space) && tocandoSuelo)
+        if(Input.GetKeyDown(KeyCode.Space) && tocandoSuelo && movimientoY != 0)
         {
-            rb.AddForce(new Vector2(0, movimientoY), ForceMode2D.Impulse);           
+            rb.AddForce(new Vector2(0, movimientoY), ForceMode2D.Impulse);
+            efectoSonidoSalto.Play();
         }
         else if (Input.GetKeyDown(KeyCode.Space) && !tocandoSuelo && saltoDobleDesbloqueado && saltoDobleActivo)
         {
             rb.AddForce(new Vector2(0, movimientoY), ForceMode2D.Impulse);
             saltoDobleActivo = false;
+            efectoSonidoSalto.Play();
         }
         else
         {
@@ -73,14 +81,7 @@ public class PlayerController : MonoBehaviour
     }
 
     private void OnCollisionEnter2D(Collision2D collision)
-    {
-        if (collision.gameObject.CompareTag("Bola"))
-        {
-            collision.gameObject.SetActive(false);
-            puntuacion++;
-            panelPuntuacion.text = "Puntuacion: " + puntuacion.ToString();
-        }
-        
+    {   
         if (collision.gameObject.CompareTag("Suelo"))
         {
             tocandoSuelo = true;
@@ -120,12 +121,8 @@ public class PlayerController : MonoBehaviour
     {
         if (collision.gameObject.CompareTag("Moneda"))
         {
-            Debug.Log("Detecto que toca el trigger");
-        }
-        
-        if (collision.gameObject.CompareTag("ParedInvisible"))
-        {
-            Debug.Log("Detecto que toca la pared invisible");
+            monedas++;
+            monedasTxt.text = "Monedas: " + monedas;
         }
 
         if (collision.gameObject.CompareTag("Checkpoint"))
@@ -138,19 +135,53 @@ public class PlayerController : MonoBehaviour
             movimientoY = velocidadY;
             mensajeSalto.SetActive(true);
             collision.GetComponent<SpriteRenderer>().enabled = false;
+            efectoRecogerHabilidad.gameObject.SetActive(true);
+            efectoRecogerHabilidad.transform.position = collision.transform.position;
+            efectoRecogerHabilidad.Play();
+            efectoSonidoPowerUp.Play();
+            collision.enabled = false;
+            RegistrarHabilidad("Salto");
         }
         if (collision.gameObject.CompareTag("Trepar"))
         {
             fuerzaEscalar = 1f;
             mensajeTrepar.SetActive(true);
             collision.GetComponent<SpriteRenderer>().enabled = false;
+            efectoRecogerHabilidad.gameObject.SetActive(true);
+            efectoRecogerHabilidad.transform.position = collision.transform.position;
+            efectoRecogerHabilidad.Play();
+            efectoSonidoPowerUp.Play();
+            collision.enabled = false;
+            RegistrarHabilidad("Trepar");
         }
         if (collision.gameObject.CompareTag("SaltoDoble"))
         {
             saltoDobleDesbloqueado = true;
             mensajeSaltoDoble.SetActive(true);
             collision.GetComponent<SpriteRenderer>().enabled = false;
+            efectoRecogerHabilidad.gameObject.SetActive(true);
+            efectoRecogerHabilidad.transform.position = collision.transform.position;
+            efectoRecogerHabilidad.Play();
+            efectoSonidoPowerUp.Play();
+            collision.enabled = false;
+            RegistrarHabilidad("Salto doble");
         }
+    }
+
+    private void RegistrarHabilidad(string habilidad)
+    {
+        if (!habilidadesRecogidas.Contains(habilidad))
+        {
+            habilidadesRecogidas.Add(habilidad);
+            ActualizarPanelHabilidades();
+        }
+    }
+
+    private void ActualizarPanelHabilidades()
+    {
+        panelHabilidades.text = "Habilidades: " +
+            string.Join(", ", habilidadesRecogidas) +
+            " (" + habilidadesRecogidas.Count + ")";
     }
 
     private void OnTriggerExit2D(Collider2D collision)
@@ -158,9 +189,15 @@ public class PlayerController : MonoBehaviour
         Debug.Log("Detecta salgo del trigger");
     }
 
-    public void ReiniciarNivel()
+    public void ReiniciarTutorial()
     {
-        SceneManager.LoadScene(1);
+        SceneManager.LoadScene("primeraEscena2D");
+        Time.timeScale=1f;
+    }
+
+    public void ReiniciarNivel1()
+    {
+        SceneManager.LoadScene("segundaEscena2D");
         Time.timeScale=1f;
     }
 
@@ -174,11 +211,5 @@ public class PlayerController : MonoBehaviour
     public void Salir()
     {
         SceneManager.LoadScene("PantallaInicio");
-    }
-
-    public void MatarPJ()
-    {
-        pantallaMuerte.SetActive(true);
-        Time.timeScale=0f;
     }
 }

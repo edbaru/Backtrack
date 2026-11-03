@@ -3,10 +3,22 @@ using UnityEngine.SceneManagement;
 
 public class MenuController : MonoBehaviour
 {
-    public void Jugar()
+    public void JugarTutorial()
     {
         Time.timeScale=1f;
-        SceneManager.LoadScene(1);
+        SceneManager.LoadScene("primeraEscena2D");
+    }
+
+    public void JugarNivel1()
+    {
+        Time.timeScale=1f;
+        SceneManager.LoadScene("segundaEscena2D");
+    }
+
+    public void VolverMenuInicio()
+    {
+        Time.timeScale=1f;
+        SceneManager.LoadScene("PantallaInicio");
     }
 
     public void Salir()
