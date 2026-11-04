@@ -21,6 +21,8 @@ TagManager:
   - Trepar
   - ParedTrepar
   - SaltoDoble
+  - CamaElastica
+  - Hielo
   layers:
   - Default
   - TransparentFX

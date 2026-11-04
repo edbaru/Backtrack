@@ -7,6 +7,7 @@ public class PlayerController : MonoBehaviour
 {
     private int vidas = 3;
     private static int monedas;
+    private int totalMonedas = 10;
     private int llaves;
     private readonly List<string> habilidadesRecogidas = new List<string>();
     private float tiempoTotal = 0;
@@ -22,23 +23,23 @@ public class PlayerController : MonoBehaviour
     [SerializeField] float velocidadX = 5f;
     [SerializeField] float velocidadY = 5f;
     [SerializeField] ParticleSystem efectoRecogerHabilidad;
-    [SerializeField] TextMeshProUGUI vidasTxt;
+    [SerializeField] TextMeshProUGUI panelHabilidades;
     [SerializeField] TextMeshProUGUI tiempotranscurrido;
     [SerializeField] TextMeshProUGUI monedasTxt;
+    [SerializeField] TextMeshProUGUI monedasTotalesTxt;
     [SerializeField] TextMeshProUGUI llavesTxt;
-    [SerializeField] TextMeshProUGUI panelHabilidades;
+    [SerializeField] TextMeshProUGUI vidasTxt;
+    [SerializeField] GameObject gameOver;
     [SerializeField] GameObject gameUI;
     [SerializeField] GameObject gameWin;
-    [SerializeField] GameObject gameOver;
     [SerializeField] AudioSource efectoSonidoSalto;
-    [SerializeField] AudioSource efectoSonidoPowerUp;
     [SerializeField] AudioSource efectoSonidoCogerLlave;
+    [SerializeField] AudioSource efectoSonidoGameOver;
     [SerializeField] AudioSource efectoSonidoGameWin;
-    [SerializeField] AudioSource efectoSonidoGameOver;    
+    [SerializeField] AudioSource efectoSonidoPowerUp;
     [SerializeField] GameObject mensajeSalto;
     [SerializeField] GameObject mensajeTrepar;
     [SerializeField] GameObject mensajeSaltoDoble;
-    [SerializeField] GameObject mensajeLlave;
 
 
     void Start()
@@ -81,7 +82,6 @@ public class PlayerController : MonoBehaviour
             Time.timeScale = 0f;
         }
 
-        //Añadir menu de pausa
     }
 
     private void OnCollisionEnter2D(Collision2D collision)
@@ -99,25 +99,27 @@ public class PlayerController : MonoBehaviour
             MoverUltimoCheckpoint(ultimoCheckpoint);
         }
 
-        if (collision.gameObject.CompareTag("Puerta"))
+        Transform puerta = collision.transform;
+        while (puerta != null && !puerta.CompareTag("Puerta"))
         {
-            if (llaves >= 1)
-            {
-                collision.gameObject.SetActive(false);
-                llaves--;
-                if (llaves == 0)
-                {
-                    llavesTxt.text = "";
-                }
-                else
-                {
-                    llavesTxt.text = "Llaves: " + llaves;
-                }
-            }
+            puerta = puerta.parent;
+        }
+
+        if (puerta != null && llaves > 0)
+        {
+            puerta.gameObject.SetActive(false);
+            llaves--;
+            llavesTxt.text = llaves == 0 ? "" : "Llaves: " + llaves;
         }
 
         if (collision.gameObject.CompareTag("Meta"))
         {
+            if (monedasTotalesTxt != null)
+            {
+                monedasTotalesTxt.text = "Has encontrado un total de " + monedas +
+                    " de las " + totalMonedas + " monedas totales";
+            }
+
             gameWin.SetActive(true);
             gameUI.SetActive(false);
             efectoSonidoGameWin.Play();
@@ -125,7 +127,14 @@ public class PlayerController : MonoBehaviour
 
         if (collision.gameObject.CompareTag("ParedTrepar") && tocandoSuelo == true)
         {
-            rb.AddForce(new Vector2(0, collision.transform.localScale.x * 2 * fuerzaEscalar), ForceMode2D.Impulse);
+            rb.AddForce(new Vector2(0, (collision.transform.localScale.x * 2 + 1) * fuerzaEscalar), ForceMode2D.Impulse);
+        }
+
+        if (collision.gameObject.CompareTag("CamaElastica") && rb.linearVelocity.y <= 0f)
+        {
+            {
+                rb.linearVelocity = new Vector2(rb.linearVelocity.x, 10f);
+            }
         }
     }
 
@@ -146,19 +155,18 @@ public class PlayerController : MonoBehaviour
             monedasTxt.text = "Monedas: " + monedas;
             collision.gameObject.SetActive(false);
         }
+
         if (collision.gameObject.CompareTag("Llave"))
         {
             llaves++;
             llavesTxt.text = "Llaves: " + llaves;
-            mensajeLlave.SetActive(true);
-            collision.GetComponent<SpriteRenderer>().enabled = false;
             efectoSonidoCogerLlave.Play();
-            collision.enabled = false;
+            collision.gameObject.SetActive(false);
         }
 
         if (collision.gameObject.CompareTag("Checkpoint"))
         {
-            ultimoCheckpoint = new Vector2(collision.gameObject.GetComponentInChildren<Transform>().position.x, collision.gameObject.GetComponentInChildren<Transform>().position.y);
+            ultimoCheckpoint = collision.transform.GetChild(0).position;
         }
 
         if (collision.gameObject.CompareTag("Salto"))
