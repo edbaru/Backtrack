@@ -23,6 +23,10 @@ TagManager:
   - SaltoDoble
   - CamaElastica
   - Hielo
+  - Enemigo
+  - CabezaEnemigo
+  - MoverCamara
+  - MensajeCuidado
   layers:
   - Default
   - TransparentFX

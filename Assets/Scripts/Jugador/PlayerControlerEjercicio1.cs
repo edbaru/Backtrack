@@ -1,5 +1,4 @@
 using TMPro;
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
@@ -9,6 +8,8 @@ public class PlayerControllerEjercicio1 : MonoBehaviour
     private int vidas = 3;
     private int puntuacion = 0;
     private float tiempoTotal = 0;
+    private int contadorSaltos = 2;
+    private float ultimoSalto = 0;
     private float movimientoX;
     private bool tocandoSuelo;
     private bool tieneLlave;
@@ -21,12 +22,16 @@ public class PlayerControllerEjercicio1 : MonoBehaviour
     [SerializeField] TextMeshProUGUI tiempotranscurrido;
     [SerializeField] TextMeshProUGUI advertenciaTxt;
     [SerializeField] TextMeshProUGUI victoriaTxt;
-    [SerializeField] TextMeshProUGUI vidasTxt;
+    [SerializeField] Slider vidasSlider;
+    [SerializeField] TextMeshProUGUI saltosTxt;
     [SerializeField] GameObject gameOver;
     [SerializeField] GameObject gameUI;
+    [SerializeField] GameObject menuPausa;
+    [SerializeField] GameObject mensajeCuidado;
 
     void Start()
     {
+        vidas = 3;
         Time.timeScale=1f;
         rb = GetComponent<Rigidbody2D>();
     }
@@ -38,7 +43,15 @@ public class PlayerControllerEjercicio1 : MonoBehaviour
         
         if(Input.GetKeyDown(KeyCode.Space) && tocandoSuelo)
         {
-            rb.AddForce(new Vector2(0, velocidadY), ForceMode2D.Impulse);           
+            rb.AddForce(new Vector2(0, velocidadY), ForceMode2D.Impulse);
+            ultimoSalto = tiempoTotal;
+        }
+        else if (Input.GetKeyDown(KeyCode.Space) && !tocandoSuelo && contadorSaltos!= 0 && ultimoSalto < tiempoTotal - 0.5)
+        {
+            rb.AddForce(new Vector2(0, velocidadY), ForceMode2D.Impulse);
+            contadorSaltos--;
+            saltosTxt.text = "Saltos: " + contadorSaltos;
+            ultimoSalto = tiempoTotal;
         }
         else
         {
@@ -55,6 +68,12 @@ public class PlayerControllerEjercicio1 : MonoBehaviour
             gameUI.SetActive(false);
             Time.timeScale=0f;
         }
+
+        if (Input.GetKeyDown(KeyCode.Escape))
+        {
+            Time.timeScale = 0f;
+            menuPausa.SetActive(true);
+        }
     }
 
     private void OnCollisionEnter2D(Collision2D collision)
@@ -69,6 +88,8 @@ public class PlayerControllerEjercicio1 : MonoBehaviour
         if (collision.gameObject.CompareTag("Suelo"))
         {
             tocandoSuelo = true;
+            contadorSaltos = 2;
+            saltosTxt.text = "Saltos: " + contadorSaltos;
         }
 
         if (collision.gameObject.CompareTag("NoSaltar"))
@@ -78,8 +99,15 @@ public class PlayerControllerEjercicio1 : MonoBehaviour
         
         if (collision.gameObject.CompareTag("Pincho") || collision.gameObject.CompareTag("ZonaMuerte"))
         {
+            vidas = 0;
+            vidasSlider.value = vidas;
+            MoverUltimoCheckpoint(ultimoCheckpoint);
+        }
+
+        if (collision.gameObject.CompareTag("Enemigo"))
+        {
             vidas--;
-            vidasTxt.text = "Vidas: " + vidas.ToString();
+            vidasSlider.value = vidas;
             MoverUltimoCheckpoint(ultimoCheckpoint);
         }
 
@@ -88,6 +116,13 @@ public class PlayerControllerEjercicio1 : MonoBehaviour
             if (tieneLlave== true)
             {
                 collision.gameObject.SetActive(false);
+            }
+        }
+
+        if (collision.gameObject.CompareTag("CamaElastica") && rb.linearVelocity.y <= 0f)
+        {
+            {
+                rb.linearVelocity = new Vector2(rb.linearVelocity.x, 10f);
             }
         }
 
@@ -103,6 +138,8 @@ public class PlayerControllerEjercicio1 : MonoBehaviour
         if (collision.gameObject.CompareTag("Suelo"))
         {
             tocandoSuelo = false;
+            contadorSaltos--;
+            saltosTxt.text = "Saltos: " + contadorSaltos;
         }
     }
 
@@ -135,6 +172,16 @@ public class PlayerControllerEjercicio1 : MonoBehaviour
             collision.gameObject.SetActive(false);
             tieneLlave = true;
         }
+
+        if (collision.gameObject.CompareTag("CabezaEnemigo"))
+        {
+            collision.gameObject.transform.parent.gameObject.SetActive(false);
+        }
+
+        if (collision.gameObject.CompareTag("MensajeCuidado"))
+        {
+            mensajeCuidado.SetActive(true);
+        }
     }
 
     private void OnTriggerExit2D(Collider2D collision)
@@ -142,6 +189,11 @@ public class PlayerControllerEjercicio1 : MonoBehaviour
         if (collision.gameObject.CompareTag("Advertencia"))
         {
             advertenciaTxt.text = "";
+        }
+
+        if (collision.gameObject.CompareTag("MensajeCuidado"))
+        {
+            mensajeCuidado.SetActive(false);
         }
     }
 
@@ -156,6 +208,16 @@ public class PlayerControllerEjercicio1 : MonoBehaviour
         transform.position = vector2;
         rb.linearVelocity = Vector2.zero;
         rb.angularVelocity = 0f;
+    }
+
+    public void IFrames()
+    {
+        
+    }
+
+    public void ResumirJuego()
+    {
+        Time.timeScale = 1f;
     }
 
     public void Salir()
