@@ -6186,7 +6186,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 661044845}
         m_TargetAssemblyTypeName: PlayerControllerEjercicio1, Assembly-CSharp
-        m_MethodName: ReiniciarNivel
+        m_MethodName: ReiniciarNivelActual
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}

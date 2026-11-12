@@ -5071,7 +5071,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 1351845889}
         m_TargetAssemblyTypeName: MenuController, Assembly-CSharp
-        m_MethodName: JugarTutorial
+        m_MethodName: ReiniciarNivelActual
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -7389,23 +7389,23 @@ MonoBehaviour:
   velocidadX: 6
   velocidadY: 5
   efectoRecogerHabilidad: {fileID: 1514438873}
-  vidasTxt: {fileID: 1732427694}
+  panelHabilidades: {fileID: 2016383824}
   tiempotranscurrido: {fileID: 1325571823}
   monedasTxt: {fileID: 2135606920}
+  monedasTotalesTxt: {fileID: 0}
   llavesTxt: {fileID: 1415961484}
-  panelHabilidades: {fileID: 2016383824}
+  vidasTxt: {fileID: 1732427694}
+  gameOver: {fileID: 329940760}
   gameUI: {fileID: 1471074416}
   gameWin: {fileID: 1467246884}
-  gameOver: {fileID: 329940760}
   efectoSonidoSalto: {fileID: 1888220709}
-  efectoSonidoPowerUp: {fileID: 1247131784}
   efectoSonidoCogerLlave: {fileID: 429194469}
-  efectoSonidoGameWin: {fileID: 1157551311}
   efectoSonidoGameOver: {fileID: 582337029}
+  efectoSonidoGameWin: {fileID: 1157551311}
+  efectoSonidoPowerUp: {fileID: 1247131784}
   mensajeSalto: {fileID: 1729909047}
   mensajeTrepar: {fileID: 643900520}
   mensajeSaltoDoble: {fileID: 81614393}
-  mensajeLlave: {fileID: 1944527180}
 --- !u!1 &1487185593
 GameObject:
   m_ObjectHideFlags: 0

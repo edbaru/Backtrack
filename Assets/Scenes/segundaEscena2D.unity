@@ -6699,7 +6699,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 1972538805}
         m_TargetAssemblyTypeName: MenuController, Assembly-CSharp
-        m_MethodName: JugarNivel1
+        m_MethodName: ReiniciarNivelActual
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}

@@ -25,4 +25,10 @@ public class MenuController : MonoBehaviour
     {
         Application.Quit();
     }
+
+    public void ReiniciarNivelActual()
+    {
+        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+        Time.timeScale=1f;
+    }
 }

@@ -1841,7 +1841,7 @@ Transform:
   m_LocalScale: {x: 50, y: 40, z: 0}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 0}
+  m_Father: {fileID: 673285652}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &182314588
 GameObject:
@@ -4648,7 +4648,7 @@ Transform:
   m_GameObject: {fileID: 661044839}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -9.51, y: -4.49, z: 0}
+  m_LocalPosition: {x: -70, y: 39.8, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 1
   m_Children: []
@@ -4990,6 +4990,7 @@ Transform:
   - {fileID: 901307320}
   - {fileID: 633865198}
   - {fileID: 1352029236}
+  - {fileID: 177459165}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &673958045
@@ -6516,7 +6517,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 661044845}
         m_TargetAssemblyTypeName: PlayerControllerEjercicio2, Assembly-CSharp
-        m_MethodName: ReiniciarNivel
+        m_MethodName: ReiniciarNivelActual
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -9580,7 +9581,7 @@ Transform:
   m_GameObject: {fileID: 1518947184}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -9.51, y: -4.49, z: -10}
+  m_LocalPosition: {x: -70, y: 39.8, z: -10}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -10710,7 +10711,7 @@ Transform:
   m_GameObject: {fileID: 1864098036}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -9.51, y: -4.49, z: -10}
+  m_LocalPosition: {x: -70, y: 39.8, z: -10}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -12027,7 +12028,6 @@ SceneRoots:
   - {fileID: 1518947189}
   - {fileID: 410429732}
   - {fileID: 673285652}
-  - {fileID: 177459165}
   - {fileID: 911914066}
   - {fileID: 745400899}
   - {fileID: 63519096}
